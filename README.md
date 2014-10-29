@@ -1,1 +1,1 @@
-#### ME495 Mini Project : Point Cloud Library, Nodelets nad ROS Indigo
+#### ME495 Mini Project : Point Cloud Library, Nodelets and ROS Indigo
