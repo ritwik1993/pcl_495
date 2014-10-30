@@ -3,5 +3,5 @@
 		<arg name="depth_registration" value="true"/>
 	</include>
 	<node name="four95_pcl_node" pkg="495_pcl" type="495_pcl_node" />
-	<node name="rviz" pkg="rviz" type="rviz" />
+	<node name="rviz" pkg="rviz" type="rviz" args="-d $(find 495_pcl)/viz.rviz" />
 </launch>
