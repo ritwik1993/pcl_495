@@ -4,8 +4,6 @@
 #include <pcl_conversions/pcl_conversions.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-#include <pcl/segmentation/conditional_euclidean_clustering.h>
-#include <pcl/segmentation/impl/conditional_euclidean_clustering.hpp>
 
 ros::Publisher pub;
 
@@ -16,33 +14,10 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
   sensor_msgs::PointCloud2 output;
 
   // Do data processing here...
-  //output = *input;
-  pcl::PCLPointCloud2Ptr conv_input;
-  pcl_conversions::toPCL(*input, *conv_input);
-  pcl::ConditionalEuclideanClustering<pcl::PointXYZI> cec (true);
-  cec.setInputCloud (*conv_input);
-  cec.setConditionFunction (&enforceIntensitySimilarity);
-  // Points within this distance from one another are going to need to validate the enforceIntensitySimilarity function to be part of the same cluster:
-  cec.setClusterTolerance (0.09f);
-  // Size constraints for the clusters:
-  cec.setMinClusterSize (5);
-  cec.setMaxClusterSize (30);
-  // The resulting clusters (an array of pointindices):
-  cec.segment (*clusters);
-  // The clusters that are too small or too large in size can also be extracted separately:
-  cec.getRemovedClusters (small_clusters, large_clusters);
-   output=*input;
-    // Publish the data.
-    pub.publish (output);
-}
+  output = *input;
 
-bool
-enforceIntensitySimilarity (const pcl::PointXYZI& point_a, const pcl::PointXYZI& point_b, float squared_distance)
-{
-  if (fabs (point_a.intensity - point_b.intensity) < 0.1f)
-    return (true);
-  else
-    return (false);
+  // Publish the data.
+  pub.publish (output);
 }
 
 int
@@ -53,7 +28,7 @@ main (int argc, char** argv)
   ros::NodeHandle nh;
 
   // Create a ROS subscriber for the input point cloud
-  ros::Subscriber sub = nh.subscribe ("camera/depth/imagess", 1, cloud_cb);
+  ros::Subscriber sub = nh.subscribe ("camera/depth_registered/points", 1, cloud_cb);
 
   // Create a ROS publisher for the output point cloud
   pub = nh.advertise<sensor_msgs::PointCloud2> ("output", 1);
