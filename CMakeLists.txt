@@ -109,6 +109,7 @@ include_directories(
 
 ## Declare a cpp executable
 add_executable(495_pcl_node src/495_pcl_node.cpp)
+add_executable(pcl_node_w_nodelets src/pcl_node_w_nodelets.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
@@ -116,7 +117,7 @@ add_executable(495_pcl_node src/495_pcl_node.cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(495_pcl_node ${catkin_LIBRARIES})
-
+target_link_libraries(pcl_node_w_nodelets ${catkin_LIBRARIES})
 #############
 ## Install ##
 #############

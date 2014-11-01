@@ -1,0 +1,49 @@
+<launch>
+	
+<include file="$(find openni2_launch)/launch/openni2.launch">
+<arg name="depth_registration" value="true"/>
+</include>
+<node name="pcl_node_w_nodelets" pkg="495_pcl" type="pcl_node_w_nodelets" />
+<node name="rviz" pkg="rviz" type="rviz" args="-d $(find 495_pcl)/viz_nodelets.rviz" />
+
+<node pkg="nodelet" type="nodelet" name="pcl_manager" args="manager" output="screen"/>
+
+<node pkg="nodelet" type="nodelet" name="pass_through_x" args="load pcl/PassThrough pcl_manager" output="screen">
+<remap from="~input" to="/camera/depth_registered/points"/>
+<rosparam>
+filter_field_name: x
+filter_limit_min: -2.0
+filter_limit_max: 2.0
+</rosparam>
+</node>
+
+
+<node pkg="nodelet" type="nodelet" name="pass_through_y" args="load pcl/PassThrough pcl_manager" output="screen">
+<remap from="~input" to="/pass_through_x/output"/>
+<rosparam>
+filter_field_name: y
+filter_limit_min: 0.0
+filter_limit_max: 6.0
+</rosparam>
+</node>
+
+
+<node pkg="nodelet" type="nodelet" name="pass_through_z" args="load pcl/PassThrough pcl_manager" output="screen">
+<remap from="~input" to="/pass_through_y/output"/>
+<rosparam>
+filter_field_name: z
+filter_limit_min: 0.0
+filter_limit_max: 6.0
+</rosparam>
+</node>
+
+<node pkg="nodelet" type="nodelet" name="voxel_grid" args="load pcl/VoxelGrid pcl_manager" output="screen">
+<remap from="~input" to="/pass_through_z/output"/>
+<rosparam>filter_field_name: y </rosparam>
+<rosparam>filter_limit_min: 0.01</rosparam>
+<rosparam>filter_limit_max: 1.7</rosparam>
+<rosparam>filter_limit_negative: False</rosparam>
+<rosparam>leaf_size: 0.01</rosparam>
+</node>
+
+</launch>
