@@ -32,7 +32,12 @@
 
 #include <boost/thread/thread.hpp>
 
+#include <pcl/features/normal_3d.h>
+#include <pcl/kdtree/kdtree.h>
+#include <pcl/segmentation/extract_clusters.h>
+
 ros::Publisher pub;
+ros::Publisher pub_obj;
 
 float deg2rad(float alpha)
 {
@@ -79,6 +84,43 @@ void ransac(const sensor_msgs::PointCloud2ConstPtr& input, pcl::PointCloud<pcl::
     floor_points->header.frame_id = "camera_link";
     floor_points->header.stamp = ros::Time::now().toNSec();
    }
+
+   // new euclidean clustering code
+   // Creating the KdTree object for the search method of the extraction
+   pcl::search::KdTree<pcl::PointXYZRGB>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZRGB>);
+   tree->setInputCloud (boost::make_shared<pcl::PointCloud<pcl::PointXYZRGB> >(*cloud));
+   
+   std::vector<pcl::PointIndices> cluster_indices;
+   pcl::EuclideanClusterExtraction<pcl::PointXYZRGB> ec;
+   ec.setClusterTolerance (0.02); // 20cm
+   ec.setMinClusterSize (100);
+   ec.setMaxClusterSize (25000);
+   ec.setSearchMethod (tree);
+   ec.setInputCloud (boost::make_shared<pcl::PointCloud<pcl::PointXYZRGB> >(*cloud));
+   ec.extract (cluster_indices);
+   
+   int j = 0;
+   
+   for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin (); it != cluster_indices.end (); ++it)
+   {
+     pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_cluster (new pcl::PointCloud<pcl::PointXYZRGB>);
+     for (std::vector<int>::const_iterator pit = it->indices.begin (); pit != it->indices.end (); pit++)
+     { 
+       cloud_cluster->points.push_back (cloud_projected->points[*pit]); //*
+     }
+     cloud_cluster->width = cloud_cluster->points.size ();
+     cloud_cluster->height = 1;
+     cloud_cluster->is_dense = true;
+     cloud_cluster->header.frame_id = "camera_link";
+     cloud_cluster->header.stamp = ros::Time::now().toNSec();
+     pub_obj.publish(*cloud_cluster);
+     //std::cout << "PointCloud representing the Cluster: " << cloud_cluster->points.size () << " data points." << std::endl;
+     //std::stringstream ss;
+     //ss << "cloud_cluster_" << j << ".pcd";
+     j++;
+   }
+   
+
 }
 
 void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
@@ -101,6 +143,7 @@ int main (int argc, char** argv)
 
   // Create a ROS publisher for the output point cloud
   pub = nh.advertise<sensor_msgs::PointCloud2> ("output", 1);
+  pub_obj = nh.advertise<sensor_msgs::PointCloud2> ("objects", 1);
 
   // Spin
   ros::spin ();
