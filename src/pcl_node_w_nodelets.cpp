@@ -53,7 +53,7 @@ void ransac(const sensor_msgs::PointCloud2ConstPtr& input, pcl::PointCloud<pcl::
   floor_finder.setMethodType(pcl::SAC_RANSAC);
   floor_finder.setMaxIterations(300);
   floor_finder.setAxis(Eigen::Vector3f(0, 0, 1));
-  floor_finder.setDistanceThreshold(0.08);
+  floor_finder.setDistanceThreshold(0.008);
   floor_finder.setEpsAngle(deg2rad(5));
   floor_finder.setInputCloud(boost::make_shared<pcl::PointCloud<pcl::PointXYZRGB> >(*cloud));
   floor_finder.segment(*floor_indices, *floor_coefficients);

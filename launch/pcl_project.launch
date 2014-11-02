@@ -1,7 +1,7 @@
 <launch>
-	<include file="$(find openni2_launch)/launch/openni2.launch">
+	<include file="$(find openni_launch)/launch/openni.launch">
 		<arg name="depth_registration" value="true"/>
 	</include>
-	<node name="four95_pcl_node" pkg="495_pcl" type="495_pcl_node" />
-	<node name="rviz" pkg="rviz" type="rviz" args="-d $(find 495_pcl)/viz.rviz" />
+	<node name="pcl_node" pkg="pcl_495" type="pcl_node" />
+	<node name="rviz" pkg="rviz" type="rviz" args="-d $(find pcl_495)/viz.rviz" />
 </launch>

@@ -1,10 +1,10 @@
 <launch>
 	
-<include file="$(find openni2_launch)/launch/openni2.launch">
+<include file="$(find openni_launch)/launch/openni.launch">
 <arg name="depth_registration" value="true"/>
 </include>
-<node name="pcl_node_w_nodelets" pkg="495_pcl" type="pcl_node_w_nodelets" />
-<node name="rviz" pkg="rviz" type="rviz" args="-d $(find 495_pcl)/viz_nodelets.rviz" />
+<node name="pcl_node_w_nodelets" pkg="pcl_495" type="pcl_node_w_nodelets" />
+<node name="rviz" pkg="rviz" type="rviz" args="-d $(find pcl_495)/viz_nodelets.rviz" />
 
 <node pkg="nodelet" type="nodelet" name="pcl_manager" args="manager" output="screen"/>
 
