@@ -70,13 +70,15 @@ Summary of differences between Openni and Openni2 drivers
 -----------------------
 We recognized that there are differences between which devices work with openni1 and openni2. The way we have it set up so far
 * Out of the box, openni1 works with asus on Alex's computer
-  * It did not work for Ritwik or Ji-hoon out of the box (they do have the same computer). He had to use openni2 instead, which worked out of the box
+  * It did not work for Ritwik or Ji-hoon out of the box (they do have the same computer). They had to use openni2 instead, which worked out of the box
 * Running the “Avin2” fix that is linked above makes openni1 work with the Kinect, but breaks the Asus driver.  We can then uses Jarvis’s solution (link on ros wiki) to fix Asus to work with openni1, otherwise we can just use openni2
 
 Installing and setting up the PCL (Point Cloud Library)
 -----------------------
 
-"The Point Cloud Library (PCL) is a standalone, large scale, open project for 2D/3D image and point cloud processing." - [PCL Website](http://pointclouds.org/)
+>The Point Cloud Library (PCL) is a standalone, large scale, open project for 2D/3D image and point cloud processing. 
+
+[PCL Website](http://pointclouds.org/)
 
 Essentially, this library makes it easy to work with depth data provided by rgb-d sensors.  It represents the depth data as a cloud of points in (x,y,z) space and implements a number of useful algorithms to filter and otherwise process the depth data.  Additionally, it is extra nice because PCL can be used in ROS, with ROS-specific data types.  Less nice is the available documentation.  Development is ongoing and changes often occur quickly and without sufficient documentation. Hopefully this write up will explain some of it more clearly and help you get started using PCL in your ROS application.
 
@@ -86,13 +88,13 @@ For some reason Alex already had it installed on his system but Ritwik did not. 
 ```
 sudo apt-get install ros-indigo-pcl-*
 ```
-this will include ‘pcl-ros’, ‘pcl-msgs’, ‘pcl-conversions’ packages
+This will include ‘pcl-ros’, ‘pcl-msgs’, ‘pcl-conversions’ packages.
 
 When developing our ROS node, we initialized our Package.xml file to depend on: geometry_msgs, roscpp, rospy, std_msgs, sensor_msgs, pcl_ros, pcl_msgs, pcl_conversions
 
-We later found out that pcl_conversions is either mostly or completely depricated.  The main purpose of this package is to convert between ROS specific PCL messages (that can be sent on topics just like standard ROS messages) and the PCL objets.  However PCL is moving towards being able to handle the ROS PCL messages just as if they were PCL objects. We actually ended up converting between the two object types at certain times and not converting at other times. It is our belief that you do not need to convert between the two types if you are using ROS Indigo and the newest version of PCL (1.7).
+We later found out that pcl_conversions is either mostly or completely depricated.  The main purpose of this package is to convert between ROS specific PCL messages (that can be sent on topics just like standard ROS messages) and the PCL objets.  However PCL is moving towards being able to handle the ros_pcl messages just as if they were PCL objects. We actually ended up converting between the two object types at certain times and not converting at other times. It is our belief that you do not need to convert between the two types if you are using ROS Indigo and the newest version of PCL (1.7).
 
-Back to the task at hand. To get PCL up and running in our ROS appliction, we started by following the online [tutorial](http://wiki.ros.org/pcl/Tutorials)
+Back to the task at hand. To get PCL up and running in our ROS appliction, we started by following the online [tutorial](http://wiki.ros.org/pcl/Tutorials).
 
 The first thing to note, is that the documentation for PCL in Indigo is not yet done, so we decided to follow the Hydro documentation.  We copied the example file.  We gave the node a name, and re-ran catkin_make.  The build succeeded, so the conversion from hydro to indigo seems to have gone smoothly so far!
 
@@ -148,9 +150,19 @@ Once we had the RANSAC algorithm up and running, it was clear that it was eating
 
 Nodelets
 -----------------------
+According to the nodelet package summary on the ROS wiki:
+> The nodelet package is designed to provide a way to run multiple algorithms in the same proces with zero copy transport between algorithms
 
-**This point is very important.** Trying to use the pcl_ros nodelets out of the box does not work because of a syntax error in the pcl_nodelets.xml file located in /opt/ros/indigo/share/pcl_ros. A </libary> tag is needed in line 36 of the file. Adding this line should allow the nodelets to work.  A pull request to fix this bug has already been submitted by another user and the change was merged in c6a31b62e, so cloning the indigo-devel branch of pcl_ros into the workspace and running catkin_make should also solve this problem.
+Taking point cloud data and running it through various filters would normally involve having to repeatedly copy data into other places in memory. This copying process takes up both CPU time and power to perform the copy, as well as memory space to hold it. Because copying can be redundant, reducing the number of copies using "zero-copy" operations allows for faster, more efficient processing. Taking advantage of the zero copy optimizations using the nodelet package allows for more frames per second due to reduced CPU processing time.
 
+### Fatal Error in Nodelets Package
+**This point is very important.** Trying to use the pcl_ros nodelets out of the box does not work because of a syntax error in the pcl_nodelets.xml file located in /opt/ros/indigo/share/pcl_ros. A 
+```
+</libary>
+```
+ tag is needed in line 36 of the file. Adding this line should allow the nodelets to work.  A pull request to fix this bug has already been submitted by another user and the change was merged in c6a31b62e, so cloning the indigo-devel branch of pcl_ros into the workspace and running catkin_make should also solve this problem.
+
+### Documentation Issues
 We also ran into some more poor documentation when trying to get nodelets to work, which is unfortunate because they are actually pretty easy to use.  To get our first nodelet up and running, we tried to follow the Pass Through filter [tutorial](http://wiki.ros.org/pcl_ros/Tutorials/PassThrough%20filtering).
 
 Seriously, look at the following image.
@@ -159,7 +171,25 @@ Seriously, look at the following image.
 
 You'll notice, they didn’t copy the whole launch file so the code starts off at kg=”nodelet”.  Additionally they have copied some other incorrect syntax and didn’t check it before uploading it. Look at the field name ‘filter_fRobot Operationg Sield_name: z’. It should be filter_field_name, but they have somehow copied ROS into the middle of it. These are not huge bugs and not difficult to recognize or fix, but it's a good illustration of the type of effor that goes into this documentation.
 
+In addition, only a few of the nodelets were listed in the wiki. The pcl_ros package actually contains many more filters and features. Since this project took advantage of the filters in pcl_ros, we'll briefly describe each of the available filters here.
+
+###PCL Filter Nodelets
+Passthrough - This filter takes a particular field and an interval for that field to consider. For instance, you could filter out all the points in a point cloud outside a particular range of x coordinates. You could also filter out all the points within a given range.
+
+Voxel Grid - Subdivides the point cloud into lots of small chunks called "leaves" and averages the points in the leaf into a single point. The result is a downsampled cloud point, which could be much faster to process than a higher resolution point cloud.
+
+Project Inliers - This filter is included in the package but has not actually been implemented. For now, it is just an empty nodelet that will not create any new ROS topics.
+
+Extract Indices - Returns a point cloud of the indices of the input point cloud.
+
+Statistical Outlier Removal - Removes or returns points that would be considered outliers. Outliers are considered using the mean_k parameter, which is the number of points to use for mean distance estimation, and stddev, the standard deviation multiplier threshold.
+
+Crop Box - similar to a passthrough filter but filters through a specified 3D box. Can return all points inside or outside the box.
+
+###Performance
 Once we got past those few bugs, nodelets were actually very easy to set up.  Each nodelet works by subscribing to one topic and then output the result of the nodelet on another topic.  We considered just making some changes to our code and using nodelets instead of our original implementation, but decided that if we wanted to test the relative speed of both approaches we should make separate executables that we can test.  So we made a new ros node ‘pcl_node_w_nodelets.cpp’ to test.  We then did some speed tests, the results are below:
+
+(As a side note, because the original implementation without nodlets used 3 passthrough filters and a voxel grid filter, the nodelets implementation also use 3 passthrough filter nodelets and a voxel grid nodelet. We could have used a single crop box filter nodelet instead of 3 passthrough filters but we stuck with the passthrough nodelets for fair comparison.)
 
 **Without Nodelets:**
 
