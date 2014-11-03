@@ -1,3 +1,4 @@
+
 #include <ros/ros.h>
 // PCL specific includes
 #include <sensor_msgs/PointCloud2.h>
@@ -22,7 +23,7 @@ cloud_cb (const sensor_msgs::PointCloud2 input)
   //output = *input;
   pcl::PointCloud<pcl::PointXYZI> conv_input;
   pcl::fromPCLPointCloud2(pcl_pc, conv_input);
-  pcl::ConditionalEuclideanClustering<pcl::PointXYZI> cec (true);
+  pcln::ConditionalEuclideanClustering<pcl::PointXYZI> cec (true);
   cec.setInputCloud (conv_input);
   cec.setConditionFunction (&enforceIntensitySimilarity);
   // Points within this distance from one another are going to need to validate the enforceIntensitySimilarity function to be part of the same cluster:
@@ -52,7 +53,7 @@ int
 main (int argc, char** argv)
 {
   // Initialize ROS
-  ros::init (argc, argv, "four95_pcl_node");
+  ros::init (argc, argv, "pcl_node");
   ros::NodeHandle nh;
 
   // Create a ROS subscriber for the input point cloud

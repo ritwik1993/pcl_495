@@ -133,7 +133,7 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
 int main (int argc, char** argv)
 {
   // Initialize ROS
-  ros::init (argc, argv, "four95_pcl_node");
+  ros::init (argc, argv, "pcl_node");
   ros::NodeHandle nh;
 
   // Create a ROS subscriber for the input point cloud

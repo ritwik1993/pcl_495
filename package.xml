@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package>
-  <name>495_pcl</name>
+  <name>pcl_495</name>
   <version>0.0.0</version>
-  <description>The 495_pcl package</description>
+  <description>The pcl_495 package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag --> 
   <!-- Example:  -->
@@ -25,7 +25,6 @@
   <!-- Authors do not have to be maintianers, but could be -->
   <!-- Example: -->
   <!-- <author email="jane.doe@example.com">Jane Doe</author> -->
-
 
   <!-- The *_depend tags are used to specify dependencies -->
   <!-- Dependencies can be catkin packages or system dependencies -->
