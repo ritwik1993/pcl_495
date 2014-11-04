@@ -4,7 +4,7 @@
 
 Project Description
 ------------------------
-Using an RGB-D sensor and the Point Cloud Library, we will separate the ground plane from the rest of the scene. If we complete all of our main project goals, we will implement a version of this that uses nodelets.  If we get a nodelet version of our project running, we will use euclidean clustering to find objects in the scene and potentially calulate cool things like the velocity of a rolling cylinder. 
+Using an RGB-D sensor and the Point Cloud Library, we will separate the ground plane from the rest of the scene. If we complete all of our main project goals, we will implement a version of this that uses nodelets.  If we get a nodelet version of our project running, we will use euclidean clustering to find objects in the scene and potentially calculate cool things like the velocity of a rolling cylinder. 
 
 Project Goals
 ------------------------
@@ -64,14 +64,14 @@ When you first start up the sensors, the resulting point clouds are not register
 * go back to rviz
 * change PointCloud2 topic to '/camera/depth_registered/points’
 
-We tested the Kinect and Xtion simultaneously on two separate computers. It was immediately obvious that there is interference between the two sensors. The Xtion seemed particularly sensitive to any proximity to the Kinect sensor.  According to the above sources, the Xtion sensor should be resiliant to interference with another Xtion sensor, but it is clear that it is susceptible to interference from a Kinect.
+We tested the Kinect and Xtion simultaneously on two separate computers. It was immediately obvious that there is interference between the two sensors. The Xtion seemed particularly sensitive within any proximity to the Kinect sensor.  According to the above sources, the Xtion sensor should be resiliant to interference with another Xtion sensor, but it is clear that it is susceptible to interference from a Kinect.
 
 Summary of differences between Openni and Openni2 drivers
 -----------------------
 We recognized that there are differences between which devices work with openni1 and openni2. The way we have it set up so far
 * Out of the box, openni1 works with asus on Alex's computer
   * It did not work for Ritwik or Ji-hoon out of the box (they do have the same computer). They had to use openni2 instead, which worked out of the box
-* Running the “Avin2” fix that is linked above makes openni1 work with the Kinect, but breaks the Asus driver.  We can then uses Jarvis’s solution (link on ros wiki) to fix Asus to work with openni1, otherwise we can just use openni2
+* Running the [Avin2](http://answers.ros.org/question/60562/ubuntu-12042-and-openni_launch-not-detecting-kinect-after-update/) fix that is linked above makes openni1 work with the Kinect, but breaks the Asus driver.  We can then uses Jarvis’s solution (link on ros wiki) to fix Asus to work with openni1, otherwise we can just use openni2
 
 Installing and setting up the PCL (Point Cloud Library)
 -----------------------
@@ -94,9 +94,9 @@ When developing our ROS node, we initialized our Package.xml file to depend on: 
 
 We later found out that pcl_conversions is either mostly or completely depricated.  The main purpose of this package is to convert between ROS specific PCL messages (that can be sent on topics just like standard ROS messages) and the PCL objets.  However PCL is moving towards being able to handle the ros_pcl messages just as if they were PCL objects. We actually ended up converting between the two object types at certain times and not converting at other times. It is our belief that you do not need to convert between the two types if you are using ROS Indigo and the newest version of PCL (1.7).
 
-Back to the task at hand. To get PCL up and running in our ROS appliction, we started by following the online [tutorial](http://wiki.ros.org/pcl/Tutorials).
+Back to the task at hand. To get PCL up and running in our ROS application, we started by following the online [tutorial](http://wiki.ros.org/pcl/Tutorials).
 
-The first thing to note, is that the documentation for PCL in Indigo is not yet done, so we decided to follow the Hydro documentation.  We copied the example file.  We gave the node a name, and re-ran catkin_make.  The build succeeded, so the conversion from hydro to indigo seems to have gone smoothly so far!
+The first thing to note, is that the documentation for PCL in Indigo is unavailable, so we decided to follow the Hydro documentation.  We copied the example file.  We gave the node a name, and re-ran catkin_make.  The build succeeded, so the conversion from hydro to indigo seems to have gone smoothly so far!
 
 Our next step was to test some basic functionality.  We wanted to see the example code run so we needed to run 
 * roscore
@@ -115,7 +115,7 @@ After a few trials, the process of running all of these files together was frust
 
 We then updated our launch file to launch openni2 with the argument, depth_registration=true, which automatically depth registers values in the point cloud as we explained earlier.  We also changed our launch file to launch rviz node with argument=”-d $(find our_package)/viz.rviz” which is the config file we set up to show the point cloud how we want.
 
-The next step was trying to get some example filter code to work using the PCL. **This was difficult.** The PCL/ROS documentation is lacking in many ways and examples online are conceptually all over the place.  PCL and ROS are developed separately and both are still undergoing many changes, a fact that is only compounded when trying to use them together.  Many of the examples that you can find online are from previous versions of one or both.  Additionally, the PCL documentation is especially poor.  The codebase is written in C++ but does not follow a single standard when it comes to method signature and what types of objects are expected.  For instance, there seem to be a number of different pointer definitions, such as pcl::PointCloud<pcl::PointCloudXYZRGB>::Ptr vs boost::make_shared<pcl::PointCloud<pcl::PointXYZRGB>  > and even sensor_msgs::PointCloud2Ptr.  The last example is obviously from different packages but there seems to be a lot of overloaded terminology that makes knowing when to use one versus the other very difficult. The boost::make_shared<pcl::PointCloud<pcl::PointXYZRGB>  > was especially tough to figure out as it was not in any of the example code we found on the web.   Matt Derry was able to help out by sharing some of his code which had solved this problem and adding the boost::make_shared to the setInputCloud method fixed all of our problems in the different sensors.  
+The next step was trying to get some example filter code to work using the PCL. **This was difficult.** The PCL/ROS documentation is lacking in many ways and examples online are conceptually all over the place.  PCL and ROS are developed separately and both are still undergoing many changes, a fact that is only compounded when trying to use them together.  Many of the examples that you can find online are from previous versions of one or both.  Additionally, the PCL documentation is especially poor.  The codebase is written in C++ but does not follow a single standard when it comes to method signature and what types of objects are expected.  For instance, there seem to be a number of different pointer definitions, such as pcl::PointCloud<pcl::PointCloudXYZRGB>::Ptr vs boost::make_shared<pcl::PointCloud<pcl::PointXYZRGB>  > and even sensor_msgs::PointCloud2Ptr.  The last example is obviously from different packages but there seems to be a lot of overloaded terminology that makes knowing when to use one versus the other very difficult. The boost::make_shared<pcl::PointCloud<pcl::PointXYZRGB>  > was especially tough to figure out as it was not in any of the example code we found on the web.   Matt Derry was able to help out by sharing some of his code which had solved this problem and adding the boost::make_shared to the setInputCloud method fixed all of our problems in the different sensors. People have also developed [python bindings](https://github.com/strawlab/python-pcl) for PCL, but these are only limited to a few PCL modules and hence we do not consider using these. 
 
 As mentioned before, there was previously a necessary step to convert between ROS sensor message point clouds and PCL point clouds.  As to whether or not they are necessary any more, or which version to use, is very confusing if you read the documentation.  The following image is the documentation relating to the PCL conversion process.
 
@@ -158,7 +158,7 @@ Taking point cloud data and running it through various filters would normally in
 ### Fatal Error in Nodelets Package
 **This point is very important.** Trying to use the pcl_ros nodelets out of the box does not work because of a syntax error in the pcl_nodelets.xml file located in /opt/ros/indigo/share/pcl_ros. A 
 ```
-</libary>
+</library>
 ```
  tag is needed in line 36 of the file. Adding this line should allow the nodelets to work.  A pull request to fix this bug has already been submitted by another user and the change was merged in c6a31b62e, so cloning the indigo-devel branch of pcl_ros into the workspace and running catkin_make should also solve this problem.
 
@@ -169,7 +169,7 @@ Seriously, look at the following image.
 
 ![Example PCL Documentation](images/ex_pcl_doc.png)
 
-You'll notice, they didn’t copy the whole launch file so the code starts off at kg=”nodelet”.  Additionally they have copied some other incorrect syntax and didn’t check it before uploading it. Look at the field name ‘filter_fRobot Operationg Sield_name: z’. It should be filter_field_name, but they have somehow copied ROS into the middle of it. These are not huge bugs and not difficult to recognize or fix, but it's a good illustration of the type of effor that goes into this documentation.
+You'll notice, they didn’t copy the whole launch file so the code starts off at kg=”nodelet”.  Additionally they have copied some other incorrect syntax and didn’t check it before uploading it. Look at the field name ‘filter_fRobot Operationg Sield_name: z’. It should be filter_field_name, but they have somehow copied ROS into the middle of it. These are not huge bugs and not difficult to recognize or fix, but it's a good illustration of the type of error that goes into this documentation.
 
 In addition, only a few of the nodelets were listed in the wiki. The pcl_ros package actually contains many more filters and features. Since this project took advantage of the filters in pcl_ros, we'll briefly describe each of the available filters here.
 
@@ -221,4 +221,4 @@ So the difference is that we see an increase in publish rate by using nodelets. 
 **With Nodelets:**
 ![CPU Load With Nodelets](images/cpu_load_with_nodelets.png)
 
-From these results we can see the result of the parallelization of our code using the nodelets. We are clearly using more processing power, but it is on more than one core and results in higher publishing frequency.
+From these results we can see the result of the parallelization of our code using the nodelets. We are clearly using more processing power, but it is on more than one core and results in higher publishing frequency without actually consuming any more memory.
