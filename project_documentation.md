@@ -71,7 +71,7 @@ Summary of differences between Openni and Openni2 drivers
 We recognized that there are differences between which devices work with openni1 and openni2. The way we have it set up so far
 * Out of the box, openni1 works with asus on Alex's computer
   * It did not work for Ritwik or Ji-hoon out of the box (they do have the same computer). They had to use openni2 instead, which worked out of the box
-* Running the [Avin2](http://answers.ros.org/question/60562/ubuntu-12042-and-openni_launch-not-detecting-kinect-after-update/) fix that is linked above makes openni1 work with the Kinect, but breaks the Asus driver.  We can then uses Jarvis’s solution (link on ros wiki) to fix Asus to work with openni1, otherwise we can just use openni2
+* Running the [Avin2](http://answers.ros.org/question/60562/ubuntu-12042-and-openni_launch-not-detecting-kinect-after-update/) fix that is linked above makes openni1 work with the Kinect, but breaks the Asus driver.  We can then uses Jarvis’s [solution](http://answers.ros.org/question/109411/asus-xtion-problems-with-ubuntu-1204-running-ros-fuerte/#109831)  to fix Asus to work with openni1, otherwise we can just use openni2
 
 Installing and setting up the PCL (Point Cloud Library)
 -----------------------
