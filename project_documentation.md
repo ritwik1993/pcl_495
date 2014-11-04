@@ -142,7 +142,15 @@ This reduced the number of points by restricting the area in which we are perfor
 
 ![Point Cloud with Pass-Through filters and Voxel Grid Filter](images/point_cloud_pass_through_all_and_voxel_grid.png)
 
-Lastly, to separate the floor from the rest of the scene we used a RANSAC algorithm.  The resulting point cloud can be seen in the following image:
+Lastly, to separate the floor from the rest of the scene we used a RANSAC algorithm.  This methodology allows us to calculate model parameters that define a plane parallel to our camera link.  RANSAC, or **RA**ndom **SA**mple **C**onsensus is "an iterative method to estimate parameters of a set of observed data which contains outliers." [Wikipedia](http://en.wikipedia.org/wiki/RANSAC)  
+
+Or specifically for our problem, we can detect which points in our depth cloud are "inliers" of the parallel palne and which depth points are "outliers."  While there are known drawbacks of this method, such as potential run-time issues, there are many benfits for our specific problem.  For instance, RANSAC will only estimate a single set of model parameters so that it only finds one plane that it will designate "the floor."  Additionally it works well even when there are a large number of outliers in the data, which is certainly the case in many natural applications of our code.
+
+An example of how this method works can be seen in the following image, also from [Wikipedia](http://en.wikipedia.org/wiki/RANSAC): 
+
+![Example RANSAC](images/ransac_ex.png)
+
+As you can see, this dataset has many outliers.  Here RANSAC finds the optimal set of model parameters to define which of the points are "inliers" of the 2D line.  Our problem is the same problem only in 3 dimensions.  The PCL RANSAC implementation also has a parameter which allows you to consider points which do not exactly fit the line or plane defined by your model parameters.  We allow for a small deviation from the plane and then project the slight deviations back down to the defined plane before presenting the final point cloud. The resulting point cloud from our project can be seen in the following image:
 
 ![Floor Point Cloud](images/point_cloud_floor_segmentation.png)
 
