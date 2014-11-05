@@ -230,3 +230,37 @@ So the difference is that we see an increase in publish rate by using nodelets. 
 ![CPU Load With Nodelets](images/cpu_load_with_nodelets.png)
 
 From these results we can see the result of the parallelization of our code using the nodelets. We are clearly using more processing power, but it is on more than one core and results in higher publishing frequency without actually consuming any more memory.
+
+###Euclidean Clustering
+Specific note for this assignment (i.e. not helpful to people trying to use this as a tutorial): We were able to get a basic version of Euclidean Clustering working, but it was not performing how we originally hoped so we did not include it in this project. Given a little more time, we are confident we could add this algorithm into our project.
+
+###Code contained in our package
+
+* Standard CMakeLists.txt and package.xml file that conform to ROS standards.
+* 2 launch files to run our code
+  * pcl_project.launch
+  * pcl_project_w_nodelets.launch
+* 2 new ROS nodes (written in c++)
+  * pcl_node.cpp
+  * pcl_node_w_nodelets.cpp
+* 2 saved RVIZ files that load automatically from the launch files so that you are set up to see the output of our code immediately upon start up.
+  * viz.rviz
+  * viz_nodelets.rviz
+
+The way we recommend running our code is through the launch files.  Run either...
+```
+roslaunch pcl_495 pcl_project.launch
+```
+Or...
+```
+roslaunch pcl_495 pcl_project_w_nodelets.launch
+```
+Both launch files will load the openni2 driver with the depth_registration argument set to true. They will also load rviz with the appropriate saved .viz file (either viz.viz for the pcl_node.cpp file or the viz_nodelets.rviz for the pcl_node_w_nodelets.cpp file).  Lastly they will load the version of our node (with or without nodelets) that is appropriate for the launch file name.
+
+If you have just installed our code, remember to
+
+```
+source devel/setup.bash
+```
+
+Thanks!
