@@ -257,10 +257,16 @@ roslaunch pcl_495 pcl_project_w_nodelets.launch
 ```
 Both launch files will load the openni2 driver with the depth_registration argument set to true. They will also load rviz with the appropriate saved .viz file (either viz.viz for the pcl_node.cpp file or the viz_nodelets.rviz for the pcl_node_w_nodelets.cpp file).  Lastly they will load the version of our node (with or without nodelets) that is appropriate for the launch file name.
 
-If you have just installed our code, remember to
+If you have just downloaded our code(hopefully into your own catkin workspace), remember to run 
+
+```
+catkin_make
+```
+in your workspace containing this package. Then source your workspace
 
 ```
 source devel/setup.bash
 ```
+All your ROS package navigation command line tools (roscd,rosls,rospack find etc..) should work and make life easier for you.
 
 Thanks!
