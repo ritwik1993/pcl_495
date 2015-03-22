@@ -1,6 +1,3 @@
-### ME 495 Mini Project 1 - Point Cloud Library, Nodelets, and ROS Indigo
-### Team: Alex Broad, Ritwik Ummalaneni, Ji-hoon Kim
-### Due Date: November 5, 2014
 
 Project Description
 ------------------------
